@@ -5,7 +5,7 @@ using UnityEngine.VFX;
 
 public class CameraLook : MonoBehaviour
 {
-    [SerializeField] GameObject[] _scanStartPos;
+    [SerializeField]GameObject[] _scanStartPos;
     [SerializeField] VisualEffect _effect;
     float timer = 0;
     private void Update()
@@ -34,8 +34,16 @@ public class CameraLook : MonoBehaviour
             Physics.Raycast(go, forward, out RaycastHit hit);
             if (hit.collider != null)
             {
-                _effect.SetVector3("SetPosition", hit.point);
-                _effect.SendEvent("OnPlay");
+                if (hit.collider.CompareTag("Enemy"))
+                {
+                    var ve = hit.collider.gameObject.GetComponent<VisualEffect>();
+                    ve.SetInt("Count",ve.GetInt("Count"));
+                }
+                else
+                {
+                    _effect.SetVector3("SetPosition", hit.point);
+                    _effect.SendEvent("OnPlay");
+                }
             }
             yield return new WaitForEndOfFrame();
         }
