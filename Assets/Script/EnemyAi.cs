@@ -1,4 +1,3 @@
-using System;
 using UnityEngine;
 using UnityEngine.VFX;
 
@@ -11,13 +10,16 @@ public class EnemyAi : MonoBehaviour
     
     private GameObject _playerObj;
     private int _particleCount = 0;
-
+    private float _EndTimingTimer;
+    
+    bool MaxParticle = false;
+    
     private void Start()
     {
         _playerObj = GameObject.FindGameObjectWithTag("Player");
     }
 
-    void Update()
+    private void Update()
     {
         if (_playerObj != null)
         {
@@ -31,12 +33,29 @@ public class EnemyAi : MonoBehaviour
         {
             Debug.Log("Player object not found");
         }
+        
+        if (MaxParticle)
+        {
+            if(_EndTimingTimer <= Time.time)
+            {
+                _EndTimingTimer = Time.time + 2f;
+                _visualEffect.SendEvent("OnPlay");
+            }
+        }
     }
 
-    public void AddParticle()
+    public void DisplayParticle()
     {
-        _particleCount++;
-        _visualEffect.SetInt("Count",_particleCount);
-        _visualEffect.Play();
+        if (MaxParticle) return;
+        if (Random.Range(0, 5) == 0)
+            _particleCount++;
+        _visualEffect.SetInt("Count", _particleCount);
+        if (_particleCount >= 20)
+        {
+            MaxParticle = true;
+            _particleCount = 100;
+            _visualEffect.SetInt("Count", _particleCount);
+        }
+        _visualEffect.SendEvent("OnPlay");
     }
 }

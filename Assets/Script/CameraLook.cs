@@ -23,11 +23,11 @@ public class CameraLook : MonoBehaviour
             {
                 list.Add(item.transform.position);
             }
-            StartCoroutine(Scan(list.ToArray(), transform.forward));
+            StartCoroutine(Scan(list, transform.forward));
         }
     }
 
-    IEnumerator Scan(Vector3[] posArr, Vector3 forward)
+    IEnumerator Scan(List<Vector3> posArr, Vector3 forward)
     {
         foreach (Vector3 go in posArr)
         {
@@ -36,8 +36,8 @@ public class CameraLook : MonoBehaviour
             {
                 if (hit.collider.CompareTag("Enemy"))
                 {
-                    var ve = hit.collider.gameObject.GetComponent<VisualEffect>();
-                    ve.SetInt("Count",ve.GetInt("Count"));
+                    var enemyAi = hit.collider.gameObject.GetComponent<EnemyAi>();
+                    enemyAi.DisplayParticle();
                 }
                 else
                 {
