@@ -53,7 +53,7 @@ public class EnemyAi : MonoBehaviour
         if (_particleCount >= 20)
         {
             MaxParticle = true;
-            _particleCount = 100;
+            _particleCount = 200;
             _visualEffect.SetInt("Count", _particleCount);
         }
         _visualEffect.SendEvent("OnPlay");
