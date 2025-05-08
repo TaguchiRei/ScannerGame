@@ -8,17 +8,19 @@ public class GroundGenerator : MonoBehaviour
     private bool[,] _maze;
 
     private void Start()
-    { 
+    {
         CreateMaze(11);
         StringBuilder st = new StringBuilder();
         for (int i = 0; i < 11; i++)
         {
             for (int j = 0; j < 11; j++)
             {
-                st.Append(_maze[i, j] ? " " : "壁");
+                st.Append(_maze[i, j] ? "　" : "壁");
             }
+
             st.Append("\n");
         }
+
         string maze = st.ToString();
         Debug.Log(maze);
     }
@@ -39,6 +41,7 @@ public class GroundGenerator : MonoBehaviour
         var y = Random.Range(1, size / 2 + 1);
 
         road.Push((x * 2, y * 2));
+        _maze[x, y] = true;
         while (road.Count != 0)
         {
             List<(int, int)> checkedPoints = new();
@@ -56,9 +59,13 @@ public class GroundGenerator : MonoBehaviour
             {
                 if (AllCheck(checkPos[i].Item1, checkPos[i].Item2, size, i)) ;
             }
-            
 
-            if (checkedPoints.Count == 0) continue; //周囲がすべて探索済みならそのまま戻る
+
+            if (checkedPoints.Count == 0)
+            {
+                Debug.Log(roadPos);
+                continue; //周囲がすべて探索済みならそのまま戻る
+            }
 
             //未探索セルがあった場合最初にpopした値を戻してからそのセルを保存
             var selectPos = checkedPoints[Random.Range(0, checkedPoints.Count)];
@@ -66,6 +73,7 @@ public class GroundGenerator : MonoBehaviour
             road.Push(selectPos);
             _maze[selectPos.Item1, selectPos.Item1] = true;
         }
+
         Debug.Log($"Generated {_maze.Length}");
     }
 
@@ -79,7 +87,6 @@ public class GroundGenerator : MonoBehaviour
     /// <returns></returns>
     private bool AllCheck(int x, int y, int size, int numberA)
     {
-        Debug.Log($"{x},{y}");
         if (y <= 0 || y >= size || x <= 0 || x >= size || _maze[x, y]) return false;
         _maze[x, y] = true;
         switch (numberA)
