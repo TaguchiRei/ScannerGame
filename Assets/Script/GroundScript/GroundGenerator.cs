@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -9,6 +10,18 @@ public class GroundGenerator : MonoBehaviour
     private void Start()
     {
         CreateMaze(11);
+        StringBuilder st = new StringBuilder();
+        for (int i = 0; i < _maze.Length; i++)
+        {
+            for (int j = 0; j < _maze.Length; j++)
+            {
+                st.Append(_maze[i, j] ? " " : "壁");
+            }
+            st.Append("\n");
+        }
+        string maze = st.ToString();
+        Debug.Log(maze);
+
     }
 
 
