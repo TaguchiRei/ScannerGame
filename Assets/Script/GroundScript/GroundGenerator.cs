@@ -8,20 +8,20 @@ public class GroundGenerator : MonoBehaviour
     private bool[,] _maze;
 
     private void Start()
-    {
+    { 
         CreateMaze(11);
         StringBuilder st = new StringBuilder();
-        for (int i = 0; i < _maze.Length; i++)
+        for (int i = 0; i < 11; i++)
         {
-            for (int j = 0; j < _maze.Length; j++)
+            for (int j = 0; j < 11; j++)
             {
+                Debug.Log($"{i},{j}");
                 st.Append(_maze[i, j] ? " " : "壁");
             }
             st.Append("\n");
         }
         string maze = st.ToString();
         Debug.Log(maze);
-
     }
 
 
@@ -31,6 +31,7 @@ public class GroundGenerator : MonoBehaviour
     /// <param name="size">必ず奇数を入力</param>
     void CreateMaze(int size)
     {
+        Debug.Log("Generating");
         _maze = new bool[size, size];
         Stack<(int x, int y)> road = new();
 
@@ -39,7 +40,7 @@ public class GroundGenerator : MonoBehaviour
         var y = Random.Range(1, size / 2 + 1);
 
         road.Push((x * 2, y * 2));
-        while (road.Count == 0)
+        while (road.Count != 0)
         {
             List<(int, int)> checkedPoints = new();
             var roadPos = road.Pop();
@@ -66,6 +67,7 @@ public class GroundGenerator : MonoBehaviour
             road.Push(selectPos);
             _maze[selectPos.Item1, selectPos.Item1] = true;
         }
+        Debug.Log($"Generated {_maze.Length}");
     }
 
     /// <summary>
