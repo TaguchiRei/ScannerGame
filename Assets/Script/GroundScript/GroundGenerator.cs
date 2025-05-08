@@ -15,7 +15,6 @@ public class GroundGenerator : MonoBehaviour
         {
             for (int j = 0; j < 11; j++)
             {
-                Debug.Log($"{i},{j}");
                 st.Append(_maze[i, j] ? " " : "壁");
             }
             st.Append("\n");
@@ -80,7 +79,8 @@ public class GroundGenerator : MonoBehaviour
     /// <returns></returns>
     private bool AllCheck(int x, int y, int size, int numberA)
     {
-        if (y <= 0 || y >= size || _maze[x, y] || x <= 0 || x >= size) return false;
+        Debug.Log($"{x},{y}");
+        if (y <= 0 || y >= size || x <= 0 || x >= size || _maze[x, y]) return false;
         _maze[x, y] = true;
         switch (numberA)
         {
