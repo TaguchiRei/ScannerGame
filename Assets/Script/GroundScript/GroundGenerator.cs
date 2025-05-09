@@ -7,6 +7,14 @@ public class GroundGenerator : MonoBehaviour
 {
     private bool[,] _maze;
 
+    private readonly (int, int)[] _checkPointArray =
+    {
+        (0, -1),
+        (0, 1),
+        (-1, 0),
+        (1, 0),
+    };
+
     private void Start()
     {
         CreateMaze(11);
@@ -35,9 +43,48 @@ public class GroundGenerator : MonoBehaviour
     void CreateMaze(int size)
     {
         _maze = new bool[size, size];
-        Stack<(int, int)> road = new Stack<(int, int)>();
-        var startPos = (Random.Range(0, size/2) * 2, Random.Range(0, size/2) * 2);
-        Debug.Log(startPos.ToString());
+        Stack<(int, int)> road = new();//探索中の道を保存するスタック
+        //スタート位置をランダムな偶数*偶数の位置にする
+        var startPos = (Random.Range(1, size / 2) * 2, Random.Range(1, size / 2) * 2);
+        road.Push(startPos);
+        while (road.Count > 0)
+        {
+            var checkPos = road.Pop();
+            var unexplored = GetUncheckCell(checkPos, size);
+            if (unexplored.Count <= 0) continue;//未調査セルが無ければ戻る
+            
+            //ランダムな調査方向に道を作る
+            var direction = unexplored[Random.Range(0, unexplored.Count)];
+            (int, int) roadPos;
+            for (int i = 1; i <= 2; i++)
+            {
+                roadPos = (checkPos.Item1 + direction.Item1 * i, checkPos.Item2 + checkPos.Item2 * i);
+                _maze[roadPos.Item1,roadPos.Item2] = true;
+            }
+            road
+        }
     }
-    
+
+    /// <summary>
+    /// 未調査地点を取得する
+    /// </summary>
+    /// <param name="roadPoint"></param>
+    /// <param name="size"></param>
+    /// <returns></returns>
+    List<(int, int)> GetUncheckCell((int , int) roadPoint, int size)
+    {
+        var unexplored = new List<(int, int)>();
+        foreach (var point in _checkPointArray)
+        {
+            var checkPos = (roadPoint.Item1 + point.Item1 * 2, roadPoint.Item2 + point.Item1 * 2);
+            if (checkPos.Item1 <= 0 || checkPos.Item1 >= size || checkPos.Item2 <= 0 ||
+                checkPos.Item2 >= size) continue;
+                
+            if (!_maze[checkPos.Item1, checkPos.Item2])
+            {
+                unexplored.Add(point);
+            }
+        }
+        return unexplored;
+    }
 }
