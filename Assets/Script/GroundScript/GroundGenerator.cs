@@ -18,7 +18,7 @@ public class GroundGenerator : MonoBehaviour
     private void Start()
     {
         CreateMaze(11);
-        
+
         StringBuilder st = new StringBuilder();
         for (int i = 0; i < 11; i++)
         {
@@ -42,28 +42,40 @@ public class GroundGenerator : MonoBehaviour
     void CreateMaze(int size)
     {
         _maze = new bool[size, size];
-        Stack<(int, int)> road = new();//探索中の道を保存するスタック
-        //スタート位置をランダムな偶数*偶数の位置にする
-        var startPos = (Random.Range(1, size / 2) * 2, Random.Range(1, size / 2) * 2);
+        Stack<(int, int)> road = new(); //探索中の道を保存するスタック
+        //スタート位置をランダムな奇数インデックスの位置にする
+        var startPos = (Random.Range(0, size / 2) * 2 + 1, Random.Range(0, size / 2) * 2 + 1);
         road.Push(startPos);
+        int count = 0;
         while (road.Count > 0)
         {
             var checkPos = road.Pop();
             var uncheckCell = GetUncheckCell(checkPos, size);
-            if (uncheckCell.Count <= 0) continue;//未調査セルが無ければ戻る
-            
+            if (uncheckCell.Count == 0)
+            {
+                Debug.Log("未調査セルに到達");
+                continue; //未調査セルが無ければ戻る
+            }
+
             //ランダムな調査方向に道を作る
             var direction = uncheckCell[Random.Range(0, uncheckCell.Count)];
+            Debug.Log($"direction : {direction}");
             (int, int) newRoadPos = default;
             for (int i = 1; i <= 2; i++)
             {
                 newRoadPos = (checkPos.Item1 + direction.Item1 * i, checkPos.Item2 + direction.Item2 * i);
-                _maze[newRoadPos.Item1,newRoadPos.Item2] = true;
+                _maze[newRoadPos.Item1, newRoadPos.Item2] = true;
             }
-            
+
             //調査したセルと新たに道にしたセルをスタックに加える
             road.Push(checkPos);
             road.Push(newRoadPos);
+            count++;
+            if (count >= 130)
+            {
+                Debug.Log("Possibility of infinite loop");
+                break;
+            }
         }
     }
 
@@ -73,20 +85,22 @@ public class GroundGenerator : MonoBehaviour
     /// <param name="roadPoint"></param>
     /// <param name="size"></param>
     /// <returns></returns>
-    List<(int, int)> GetUncheckCell((int , int) roadPoint, int size)
+    List<(int, int)> GetUncheckCell((int, int) roadPoint, int size)
     {
         var unexplored = new List<(int, int)>();
         foreach (var point in _checkPointArray)
         {
-            var checkPos = (roadPoint.Item1 + point.Item1 * 2, roadPoint.Item2 + point.Item1 * 2);
+            var checkPos = (roadPoint.Item1 + point.Item1 * 2, roadPoint.Item2 + point.Item2 * 2);
             if (checkPos.Item1 <= 0 || checkPos.Item1 >= size || checkPos.Item2 <= 0 ||
                 checkPos.Item2 >= size) continue;
-                
+
             if (!_maze[checkPos.Item1, checkPos.Item2])
             {
+                Debug.Log($"Add Point : {point}");
                 unexplored.Add(point);
             }
         }
+        
         return unexplored;
     }
 }
