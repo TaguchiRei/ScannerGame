@@ -18,7 +18,7 @@ public class GroundGenerator : MonoBehaviour
     private void Start()
     {
         CreateMaze(11);
-        /*
+        
         StringBuilder st = new StringBuilder();
         for (int i = 0; i < 11; i++)
         {
@@ -32,7 +32,6 @@ public class GroundGenerator : MonoBehaviour
 
         string maze = st.ToString();
         Debug.Log(maze);
-        */
     }
 
 
@@ -50,18 +49,21 @@ public class GroundGenerator : MonoBehaviour
         while (road.Count > 0)
         {
             var checkPos = road.Pop();
-            var unexplored = GetUncheckCell(checkPos, size);
-            if (unexplored.Count <= 0) continue;//未調査セルが無ければ戻る
+            var uncheckCell = GetUncheckCell(checkPos, size);
+            if (uncheckCell.Count <= 0) continue;//未調査セルが無ければ戻る
             
             //ランダムな調査方向に道を作る
-            var direction = unexplored[Random.Range(0, unexplored.Count)];
-            (int, int) roadPos;
+            var direction = uncheckCell[Random.Range(0, uncheckCell.Count)];
+            (int, int) newRoadPos = default;
             for (int i = 1; i <= 2; i++)
             {
-                roadPos = (checkPos.Item1 + direction.Item1 * i, checkPos.Item2 + checkPos.Item2 * i);
-                _maze[roadPos.Item1,roadPos.Item2] = true;
+                newRoadPos = (checkPos.Item1 + direction.Item1 * i, checkPos.Item2 + checkPos.Item2 * i);
+                _maze[newRoadPos.Item1,newRoadPos.Item2] = true;
             }
-            road
+            
+            //調査したセルと新たに道にしたセルをスタックに加える
+            road.Push(checkPos);
+            road.Push(newRoadPos);
         }
     }
 
