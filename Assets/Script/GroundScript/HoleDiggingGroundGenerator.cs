@@ -1,11 +1,15 @@
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using UnityEngine;
+using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
-public class GroundGenerator : MonoBehaviour
+public class HoleDiggingGroundGenerator : MonoBehaviour
 {
     private bool[,] _maze;
+    
+    [SerializeField] private int _mazeSize;
 
     private readonly (int, int)[] _checkPointArray =
     {
@@ -17,23 +21,26 @@ public class GroundGenerator : MonoBehaviour
 
     private void Start()
     {
-        for (int i = 0; i < 30; i++)
+        if (_mazeSize % 2 == 0) _mazeSize++;
+        Stopwatch stopwatch = new Stopwatch();
+        stopwatch.Start();
+        CreateMaze(_mazeSize);
+        stopwatch.Stop();
+        Debug.Log($"処理時間　:　{stopwatch.ElapsedMilliseconds}ms");
+        
+        StringBuilder st = new StringBuilder();
+        for (int j = 0; j < _mazeSize; j++)
         {
-            CreateMaze(11);
-            StringBuilder st = new StringBuilder();
-            for (int j = 0; j < 11; j++)
+            for (int k = 0; k < _mazeSize; k++)
             {
-                for (int k = 0; k < 11; k++)
-                {
-                    st.Append(_maze[j, k] ? "　" : "壁");
-                }
-
-                st.Append("\n");
+                st.Append(_maze[j, k] ? "　" : "壁");
             }
 
-            string maze = st.ToString();
-            Debug.Log(maze);
+            st.Append("\n");
         }
+
+        string maze = st.ToString();
+        Debug.Log(maze);
     }
 
 
