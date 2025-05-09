@@ -17,21 +17,23 @@ public class GroundGenerator : MonoBehaviour
 
     private void Start()
     {
-        CreateMaze(11);
-
-        StringBuilder st = new StringBuilder();
-        for (int i = 0; i < 11; i++)
+        for (int i = 0; i < 30; i++)
         {
+            CreateMaze(11);
+            StringBuilder st = new StringBuilder();
             for (int j = 0; j < 11; j++)
             {
-                st.Append(_maze[i, j] ? "　" : "壁");
+                for (int k = 0; k < 11; k++)
+                {
+                    st.Append(_maze[j, k] ? "　" : "壁");
+                }
+
+                st.Append("\n");
             }
 
-            st.Append("\n");
+            string maze = st.ToString();
+            Debug.Log(maze);
         }
-
-        string maze = st.ToString();
-        Debug.Log(maze);
     }
 
 
@@ -46,20 +48,17 @@ public class GroundGenerator : MonoBehaviour
         //スタート位置をランダムな奇数インデックスの位置にする
         var startPos = (Random.Range(0, size / 2) * 2 + 1, Random.Range(0, size / 2) * 2 + 1);
         road.Push(startPos);
-        int count = 0;
         while (road.Count > 0)
         {
             var checkPos = road.Pop();
             var uncheckCell = GetUncheckCell(checkPos, size);
             if (uncheckCell.Count == 0)
             {
-                Debug.Log("未調査セルに到達");
                 continue; //未調査セルが無ければ戻る
             }
 
             //ランダムな調査方向に道を作る
             var direction = uncheckCell[Random.Range(0, uncheckCell.Count)];
-            Debug.Log($"direction : {direction}");
             (int, int) newRoadPos = default;
             for (int i = 1; i <= 2; i++)
             {
@@ -70,17 +69,11 @@ public class GroundGenerator : MonoBehaviour
             //調査したセルと新たに道にしたセルをスタックに加える
             road.Push(checkPos);
             road.Push(newRoadPos);
-            count++;
-            if (count >= 130)
-            {
-                Debug.Log("Possibility of infinite loop");
-                break;
-            }
         }
     }
 
     /// <summary>
-    /// 未調査地点を取得する
+    /// 未調査地点を取得する。位置マス跳びで調査しているので壁に穴をあけてループを発生させることができる
     /// </summary>
     /// <param name="roadPoint"></param>
     /// <param name="size"></param>
@@ -96,11 +89,10 @@ public class GroundGenerator : MonoBehaviour
 
             if (!_maze[checkPos.Item1, checkPos.Item2])
             {
-                Debug.Log($"Add Point : {point}");
                 unexplored.Add(point);
             }
         }
-        
+
         return unexplored;
     }
 }
