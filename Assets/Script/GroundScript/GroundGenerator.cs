@@ -57,7 +57,7 @@ public class GroundGenerator : MonoBehaviour
             (int, int) newRoadPos = default;
             for (int i = 1; i <= 2; i++)
             {
-                newRoadPos = (checkPos.Item1 + direction.Item1 * i, checkPos.Item2 + checkPos.Item2 * i);
+                newRoadPos = (checkPos.Item1 + direction.Item1 * i, checkPos.Item2 + direction.Item2 * i);
                 _maze[newRoadPos.Item1,newRoadPos.Item2] = true;
             }
             
