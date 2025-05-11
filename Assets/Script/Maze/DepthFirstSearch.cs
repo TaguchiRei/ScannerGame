@@ -39,7 +39,7 @@ public class DepthFirstSearch : MazeBase
         
         Stack<(int, int)> route = new();
         route.Push((_startPos.x, _startPos.y));
-        
+        _visited[_startPos.x, _startPos.y] = true;
         bool goal = false;
         int i = 0;
         while (!goal)
@@ -51,6 +51,7 @@ public class DepthFirstSearch : MazeBase
             var nextRoute = nextRouteOption[0];
             route.Push(pos);
             route.Push(nextRoute);
+            _visited[nextRoute.Item1, nextRoute.Item2] = true;
             i++;
             if (i > 50)
             {
