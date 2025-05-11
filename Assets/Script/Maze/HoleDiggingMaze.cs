@@ -10,7 +10,7 @@ public class HoleDiggingMaze : MazeBase
     [SerializeField] private int _mazeSize;
     [SerializeField] private bool _makeLoop;
 
-    private void Start()
+    private void Awake()
     {
         if (_mazeSize % 2 == 0) _mazeSize++;
         var stopWatch = new Stopwatch();
@@ -43,8 +43,11 @@ public class HoleDiggingMaze : MazeBase
         Maze = new bool[size, size];
         Stack<(int, int)> road = new();
         //スタート位置をランダムな奇数インデックスの位置にする
-        var startPos = (Random.Range(0, size / 2) * 2 + 1, Random.Range(0, size / 2) * 2 + 1);
+        //var startPos = (Random.Range(0, size / 2) * 2 + 1, Random.Range(0, size / 2) * 2 + 1);
+        var startPos = (1, 1);
+        
         road.Push(startPos);
+        Maze[startPos.Item1, startPos.Item2] = true;
         
         while (road.Count > 0)
         {
