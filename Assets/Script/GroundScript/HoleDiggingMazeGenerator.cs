@@ -5,10 +5,14 @@ using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Random = UnityEngine.Random;
 
-public class HoleDiggingGroundGenerator : MonoBehaviour
+public class HoleDiggingMazeGenerator : MonoBehaviour
 {
-    private bool[,] _maze;
-    
+    public bool[,] Maze
+    {
+        get;
+        private set;
+    }
+
     [SerializeField] private int _mazeSize;
 
     private readonly (int, int)[] _checkPointArray =
@@ -22,18 +26,18 @@ public class HoleDiggingGroundGenerator : MonoBehaviour
     private void Start()
     {
         if (_mazeSize % 2 == 0) _mazeSize++;
-        Stopwatch stopwatch = new Stopwatch();
+        var stopwatch = new Stopwatch();
         stopwatch.Start();
         CreateMaze(_mazeSize);
         stopwatch.Stop();
         Debug.Log($"処理時間　:　{stopwatch.ElapsedMilliseconds}ms");
-        
+
         StringBuilder st = new StringBuilder();
         for (int j = 0; j < _mazeSize; j++)
         {
             for (int k = 0; k < _mazeSize; k++)
             {
-                st.Append(_maze[j, k] ? "　" : "壁");
+                st.Append(Maze[j, k] ? "　" : "壁");
             }
 
             st.Append("\n");
@@ -48,29 +52,28 @@ public class HoleDiggingGroundGenerator : MonoBehaviour
     /// 迷路生成を行う
     /// </summary>
     /// <param name="size">必ず奇数を入力</param>
-    void CreateMaze(int size)
+    private void CreateMaze(int size)
     {
-        _maze = new bool[size, size];
+        Maze = new bool[size, size];
         Stack<(int, int)> road = new(); //探索中の道を保存するスタック
         //スタート位置をランダムな奇数インデックスの位置にする
         var startPos = (Random.Range(0, size / 2) * 2 + 1, Random.Range(0, size / 2) * 2 + 1);
         road.Push(startPos);
+        //_maze[startPos.Item1, startPos.Item2] = true;
+        Debug.Log(startPos);
         while (road.Count > 0)
         {
             var checkPos = road.Pop();
             var uncheckCell = GetUncheckCell(checkPos, size);
-            if (uncheckCell.Count == 0)
-            {
-                continue; //未調査セルが無ければ戻る
-            }
+            if (uncheckCell.Count == 0) continue; //未調査セルが無ければ戻る
 
             //ランダムな調査方向に道を作る
             var direction = uncheckCell[Random.Range(0, uncheckCell.Count)];
             (int, int) newRoadPos = default;
-            for (int i = 1; i <= 2; i++)
+            for (var i = 1; i <= 2; i++)
             {
                 newRoadPos = (checkPos.Item1 + direction.Item1 * i, checkPos.Item2 + direction.Item2 * i);
-                _maze[newRoadPos.Item1, newRoadPos.Item2] = true;
+                Maze[newRoadPos.Item1, newRoadPos.Item2] = true;
             }
 
             //調査したセルと新たに道にしたセルをスタックに加える
@@ -87,19 +90,20 @@ public class HoleDiggingGroundGenerator : MonoBehaviour
     /// <returns></returns>
     List<(int, int)> GetUncheckCell((int, int) roadPoint, int size)
     {
-        var unexplored = new List<(int, int)>();
+        List<(int,int)> unexplored = new();
         foreach (var point in _checkPointArray)
         {
             var checkPos = (roadPoint.Item1 + point.Item1 * 2, roadPoint.Item2 + point.Item2 * 2);
-            if (checkPos.Item1 <= 0 || checkPos.Item1 >= size || checkPos.Item2 <= 0 ||
-                checkPos.Item2 >= size) continue;
+            if (checkPos.Item1 <= 0
+                || checkPos.Item1 >= size
+                || checkPos.Item2 <= 0
+                || checkPos.Item2 >= size) continue;
 
-            if (!_maze[checkPos.Item1, checkPos.Item2])
+            if (!Maze[checkPos.Item1, checkPos.Item2])
             {
                 unexplored.Add(point);
             }
         }
-
         return unexplored;
     }
 }
