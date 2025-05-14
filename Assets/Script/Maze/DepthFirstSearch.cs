@@ -41,28 +41,36 @@ public class DepthFirstSearch : MazeBase
         Stack<(int, int)> route = new();
         route.Push((_startPos.x, _startPos.y));
         _visited[_startPos.x, _startPos.y] = true;
-        bool goal = false;
-        int i = 0;
-        while (!goal)
+        while (true)
         {
             var pos = route.Pop();
-            if (pos == (_endPos.x, _endPos.y)) goal = true;
+            route.Push(pos);
+            Debug.Log(pos);
+            if (pos == (_endPos.x, _endPos.y))
+            {
+                break;
+            }
+
             var nextDirectionOption = GetUncheckCellNext(pos, size);
-            if (nextDirectionOption.Count == 0) continue; //道が行きどまりまたはすべて探索済みなら戻る
+            if (nextDirectionOption.Count == 0)
+            {
+                Debug.Log(pos);
+                continue; //道が行きどまりまたはすべて探索済みなら戻る
+            }
 
             var nextRoute = (pos.Item1 + nextDirectionOption[0].Item1, pos.Item2 + nextDirectionOption[0].Item2);
             route.Push(pos);
             route.Push(nextRoute);
             _visited[nextRoute.Item1, nextRoute.Item2] = true;
-            i++;
-            if (i > 200)
-            {
-                Debug.Log("無限ループの可能性があります");
-                break;
-            }
         }
 
-        return route.ToList();
+        var result = new List<(int, int)>();
+        for (int i = 0; i < route.Count; i++)
+        {
+            result.Insert(0, route.Pop());
+        }
+
+        return result;
     }
 
     [Serializable]
