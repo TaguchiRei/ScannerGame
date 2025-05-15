@@ -7,7 +7,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] VisualEffect _effect;
     private void Start()
     {
-        //Cursor.lockState = CursorLockMode.Locked;
+        Cursor.lockState = CursorLockMode.Locked;
     }
     private void Update()
     {

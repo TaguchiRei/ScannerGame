@@ -7,7 +7,7 @@ public class SetWallObject : MonoBehaviour
     [SerializeField] private MazeBase _mazeBase;
     [SerializeField] private int _mazeSize;
     [SerializeField] private GameObject _mazeObjectPrefab;
-
+    [SerializeField] private float _objectSize;
     public void GenerateMaze()
     {
         _ = SetWall();
@@ -20,9 +20,9 @@ public class SetWallObject : MonoBehaviour
         {
             for (int j = 0; j < _mazeSize; j++)
             {
-                if (_mazeBase.Maze[i, j] == false)
+                if (_mazeBase.Maze[i, j])
                 {
-                    posList.Add(new Vector3(i * 2, 0, j * 2));
+                    posList.Add(new Vector3(i * _objectSize, 0, j * _objectSize));
                 }
             }
         }
